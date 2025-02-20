@@ -1,21 +1,38 @@
-MIT License
-
-Copyright (c) 2025 R. W. "Nick" Stavros
+# Copyright (c) 2025 Dido Solutions, Inc
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+of this software and of this software and associated documentation files 
+(the "Software") to deal in the Software without restriction, including 
+without limitation, the rights to use, copy, modify, merge, publish, 
+distribute, sublicense, and/or sell without limitation the rights
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+# Prohibited Activities:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+You cannot copy, modify, distribute, transmit, reproduce, publish,
+publicly display, publicly perform, create derivative works, transfer,
+or sell any of the content without prior written permission from 
+Dido Solutions.
+
+# Non-Exclusive License:
+
+The software is provided _"as is"_ without warranty of any kind, expressed or 
+implied.
+You are granted a non-exclusive, non-transferable license to use this
+file for personal, non-commercial purposes only.
+
+# Non-Commercial Use:
+
+Governments, educational institutions, and tax-exempt/public-benefit 
+Non-profits are granted a non-exclusive, non-transferable license to 
+use this file for non-commercial purposes.
+
+# Commercial Use:
+
+You cannot use this file for your business or profit without 
+Dido Solutions' consent (https://didosolutions.com/contact/).
+
+# Attribution Notice:
+
+You must retain this attribution notice in all copies of the file:
