@@ -1,0 +1,53 @@
+# -----------------------------------------------------------------------------
+# PUBLIC
+# -----------------------------------------------------------------------------
+# GitHub Workflow: Auto-Sync Pre-Commit Configuration
+#
+# 📝 Purpose:
+# - Automatically syncs `TemplateDL/pre_commit_config.yml` to `.github/workflows/pre-commit.yml`
+# - Ensures that GitHub always runs the latest pre-commit checks without manual copying
+#
+# 🚀 Deployment Instructions:
+# 1️⃣ Ensure this file (`sync-pre-commit.yml`) is inside `.github/workflows/`
+# 2️⃣ Ensure `TemplateDL/pre_commit_config.yml` is your **single source of truth**
+# 3️⃣ Manually add and push this workflow to GitHub (ONLY NEEDED ONCE):
+#
+#     git add .github/workflows/sync-pre-commit.yml
+#     git commit -m "Added workflow to auto-sync pre-commit config"
+#     git push origin main
+#
+# 4️⃣ Every time `pre_commit_config.yml` is updated, this workflow will:
+#     ✅ Copy it to `.github/workflows/pre-commit.yml`
+#     ✅ Ensure GitHub Actions uses the latest version
+#
+# -----------------------------------------------------------------------------
+
+name: Sync Pre-Commit Config
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:  # Allow manual execution if needed
+
+jobs:
+  sync-pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🔄 Sync Pre-Commit Config to Workflows
+        run: |
+          cp TemplateDL/pre_commit_config.yml .github/workflows/pre-commit.yml
+
+      - name: 📤 Commit and Push Updated Workflow
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/pre-commit.yml
+          git commit -m "🔄 Auto-synced pre-commit config from TemplateDL"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
