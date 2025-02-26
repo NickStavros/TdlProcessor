@@ -1,0 +1,1102 @@
+<template>                 ::= <blocks>*
+<blocks>                   ::= <block>+
+<block>                    ::= <linesOfText>*
+<linesOfText>              ::= <lineOfText>+
+<lineOfText>               ::=  
+                                <allCharactersToEOL>
+                              | <error>
+<allCharactersToEOL>       ::= 
+                               <characterValue>* 
+                               - <endOfLine>
+<processedLine>            ::=  
+                                 <lineOfText>
+                               | <lineWithPlaceHolder>
+                               | <lineWithoutPlaceHolder>
+                               | <lineWithHostCommand>
+                               | <lineWithoutHostCommand>
+                               | <lineWithLineCommentCommand>
+                               | <lineWithoutLineCommentCommand>
+                               | <lineWithBlockCommentCommand>
+                               | <lineWithoutBlockCommentCommand>
+<metaCommand>             ::=  
+                                <metaCommandOp> 
+                               [ <regularTdlMetaCommands> 
+                                 | <macroName> 
+                               ] <argumentListValues>
+<lineWithPlaceHolder>      ::=  
+                                <characterValue>*
+                                <placeholderVariable> 
+                                [ <lineWithPlaceHolder> ]
+<placeholderValue>         ::= 
+                               <metaPlaceHolderStart> 
+                                 ( <variableName> 
+                                   | <placeholderValue>
+                                 )* 
+                               <metaPlaceHolderEnd>
+<lineWithoutPlaceHolder>   ::= <allCharactersToEOL>
+<metaPlaceHolderStart>     ::= <metaVarStart>
+<metaPlaceHolderEnd>       ::= <metaVarEnd>
+<lineWithHostCommand>      ::=  
+                                <characterValue>*
+                                <hostCommandText> 
+                               [ <lineWithHostCommand> ]
+<hostCommandText>          ::= 
+                                <metaHostCmdIndicator> 
+                                <characterValue>* 
+                                <metaHostCmdIndicator>
+<lineWithoutHostCommand>   ::= <allCharactersToEOL>
+<lineWithLineCommentCommand> ::=  
+                                <characterValue>*
+                                <metaCommentIndicator> 
+                                <lineWithLineCommentCommand>
+<lineCommentContent>       ::= <allCharactersToEOL>
+
+<lineWithoutLineCommentCommand> ::= <allCharactersToEOL>
+<lineWithBlockCommentCommand> ::=  
+                                <characterValue>*
+                                <metaBlockCommentStart> 
+                                <blockCommentContent> 
+                                <metaBlockCommentEnd>
+<blockCommentContent>      ::=  
+                                <characterValue>* - <metaBlockCommentEnd> 
+                                [  <lineWithBlockCommentCommand> ]
+<lineWithoutBlockCommentCommand>  ::= <allCharactersToEOL>
+
+<templateLineOfText>       ::=  
+                                <metaLineOfText> 
+                              | <nonMetaLineOfText>
+<metaLineOfText>           ::=  
+                                <metaCommandIndicator>  
+                                <processedLine>
+<nonMetaLineOfText>        ::= <processedLine>
+<debugStatement>           ::=  
+                                <metaCommandOp> 
+                                debugCommand 
+                                <modeSetting>
+<modeSetting>              ::= <booleanValue>
+<defineStatement>          ::=  
+                                <metaCommandOp>
+                                defineCommand 
+                                <nameOfStackVariable> 
+                                <valueOfStackVariable>
+<nameOfStackVariable>      ::= <variableName>
+<valueOfStackVariable>     ::= <valueOfVariable>
+<dumpStatement>            ::=  
+                                <metaCommandOp> 
+                                dumpCommand 
+                                <globalComponent>
+globalComponent            ::=  
+                                "ENVIRONMENT"
+                               | "SETTINGS"
+                               | "STACK"
+                               | "LOCAL"
+                               | "MACROS"
+                               | "CURSORS"
+                               | "ALL"
+<echoStatement>            ::=  
+                                <metaCommandOp>  
+                                echoCommand 
+                                [ <echoTracing> 
+                                  | ruler 
+                                  | <textToEcho> 
+                                ]
+<echoTracing>              ::= traceComponent <modeSetting>
+traceComponent             ::=  
+                                  "INPUT" 
+                                | "OUTPUT" 
+                                | "COMMENT"
+ruler                      ::= ("....:....|")+
+<textToEcho>               ::= <allCharactersToEOL>
+<modeSetting>              ::= <booleanValue>
+<eofStatement>             ::=  
+                                <metaCommandOp>  
+                                eofCommand
+<exitStatement>           ::=  
+                               <metaCommandOp>     
+                               exitCommand     
+                               [<exitInformation>]
+<exitInformation>         ::=  
+                                [<exitNumber>]  
+                                exitText
+exitNumber                ::= <integerValue>
+exitText                  ::= <allCharactersToEOL>
+<ifDefStatement>          ::=  
+                                <metaCommandOp> 
+                                ifDefineCommand 
+                                <nameOfStackVariable>
+<ifNDefStatement>         ::=  
+                                ifNotDefinedCommand  
+                                <nameOfStackVariable>
+
+<ifSetStatement>          ::=  
+                                ifSetCommand  
+                                <nameOfHeapVariable>
+<ifNSetStatement>         ::=  
+                                ifNotSetCommand  
+                                <nameOfHeapVariable>
+<ifStatement>             ::=  
+                                <metaCommandOp>  
+                                ifCommand  
+                                <booleanExpression>
+<ifBlockStatement>        ::=  
+                                <block>
+                              | <conditionalBlock>
+<conditionalBlock>        ::=  
+                              <conditionalStatement>
+                                <ifBlockStatement> 
+                                <optionalElseIfBlock>* 
+                                <optionalElseBlock>*
+                              <endIfStatement>
+<optionalElseIfBlock>     ::= <elseIfBlockStatement>*
+<optionalElseBlock>       ::=  
+                              <elseBlockStatement> 
+                             | ε
+<elseIfBlockStatement>    ::=  
+                                elseIfCommand 
+                                <booleanExpression> 
+                                <ifBlockStatement> 
+                                <elseIfBlockStatement>*
+                             | ε
+<elseBlockStatement>      ::=  
+                               elseCommand <block>
+                             | ε
+<booleanExpression>       ::=  
+                                <comparisonExpression>
+                             | <logicalExpression>
+                             | <booleanValue>
+<logicalExpression>       ::=  
+                                <logicalTerm>
+                              | <logicalExpression> 
+                                <logicalOperator> 
+                                <logicalTerm>
+<logicalTerm>             ::=  
+                                <booleanValue>
+                              | <expression>
+<comparisonExpression>    ::=  
+                                <expression> 
+                                <comparisonOperator> 
+                                <expression>
+<expression>              ::=  
+                                <arithmeticExpression>
+                              | <stringValue>
+                              | <numericValue>
+                              | <functionCall>
+                              | <variableName>
+<conditionalStatement>   ::=  
+                             [ <ifStatement>
+                               | <ifDefStatement>
+                               | <ifNDefStatement>
+                               | <ifSetStatement>
+                               | <ifNSetStatement>
+                             ]
+<conditionalStatementBlock> ::=  
+                                <conditionalStatement>
+                                <ifBlockStatement>*
+<ifBlockStatement>         ::=  
+                                <block>
+                              | <conditionalBlock>
+<ifStatement>              ::=  
+                                ifCommand  
+                                <booleanExpression> 
+                                <ifBlockStatement>* 
+                                endIfStatement
+<endIfStatement>          ::=  
+                                <metaCommandOp>
+                                <endIfCommand>
+<term>                     ::=  
+                                <factor>  
+                                <binaryMathOperator>  
+                                <term>
+                              | <factor>
+<factor>                   ::=  
+                                unaryMathOperator <factor>
+                              | <numericValue>
+                              | <stringValue>
+                              | <functionCall>
+                              | <variableReference>
+<functionCall>             ::=  
+                                functionName  
+                                "("  
+                                <argumentListValues>  
+                                ")"
+functionName               ::= <variableName>
+variableReference          ::= <variableName>
+
+<includeStatement>         ::=  
+                                <metaCommandOp>  
+                                includeCommand  
+                                <includePath> 
+                                [ <argumentListValues> ]
+<includePath>              ::=  
+                                <resourceReference>
+                               | <resourceIdentifier>
+
+<macroBlock>              ::=  
+                                <macroBeginStatement> 
+                                <macroBody> 
+                                <macroEndStatement>
+<macroBody>               ::= <blocks>
+<macroBeginStatement>     ::=  
+                                <metaIndicator> 
+                                macroBeginCommand 
+                                <macroName> 
+                                  [ <argumentListValues> ]
+<macroName>               ::= <variableName> - <regularTdlMetaCommands>
+<macroEndStatement>       ::=  
+                                <metaIndicator>  
+                                macroEndCommand
+<macroExecuteStatement>   ::=  
+                                <metaCommandOp> 
+                                <macroName> 
+                                [ <argumentListValues> ]
+
+<outputStatement>         ::=  
+                                <metaCommandOp> 
+                                outputCommand 
+                                <outputStateControl>
+<outputStateControl>      ::=  
+                                [ <outputInitialization>
+                                  | outputState
+                                ]
+<outputInitialization>    ::=  
+                                "BEGIN"  
+                                <outputPath>
+outputState               ::=  
+                                "PAUSE"
+                              | "RESUME"
+                              | "CLOSE"
+<outputPath>               ::=  
+                                <doubleQuotePath>
+                              | <singleQuotePath>
+                              | <resourceIdentifier>
+
+<putStatement>             ::=  
+                                <metaCommandOp>  
+                                putCommand  
+                                <processedLine>
+<putlineStatement>         ::=  
+                                <metaCommandOp>  
+                                putlineCommand 
+                                <processedLine> 
+<setStatement>             ::=  
+                                <metaCommandOp>  
+                                setCommand 
+                                [context] 
+                                <nameOfHeapVariable> 
+                                <valueOfHeapVariable>
+context                    ::=  
+                                "ENVIRONMENT"
+                              | "GLOBAL"
+                              | "TYPE"
+<nameOfHeapVariable>      ::= <variableName>
+<valueOfHeapVariable>     ::= <valueOfVariable>
+<undefineStatement>        ::=  
+                                <metaCommandOp> 
+                                 undefineCommand  
+                                nameOfStackVariable
+
+<unsetStatement>           ::=  
+                                <metaCommandOp>  
+                                unsetCommand  
+                                nameOfHeapVariable
+
+<wwStatement>              ::=  
+                                <metaCommandOp> 
+                                wordwrapCommand 
+                                <attributes> 
+                                <stringValue>
+<attributes>               ::=  
+                                <attribute> 
+                              | <attributes>
+<attribute>                ::=  
+                                <stringAttribute> 
+                              | <numericAttribute> 
+                              | <booleanAttribute>
+<stringAttribute>          ::=  
+                                stringAttributeName 
+                                assignmentOperator 
+                                <stringValue>
+<numericAttribute>         ::=  
+                                numericAttributeName 
+                                assignmentOperator 
+                                <numericValue>
+<booleanAttribute>        ::=  
+                                booleanAttributeName 
+                                assignmentOperator 
+                                <booleanValue>
+stringAttributeName        ::=  
+                                "class" 
+                              | "prefix" 
+                              | "initialPrefix" 
+                              | "postfix" 
+                              | "finalPostfix"
+                              | "escapeCharacter" 
+                              | "textBreak" 
+                              | "hyphenation"
+numericAttributeName       ::= "lineLength" 
+booleanAttributeName       ::=  
+                                "quoteLiterals" 
+                              | "padTheOutput" 
+                              | "hyphenate"
+
+<cursorStatement>          ::=  
+                                <metaCommandOp> cursorCommand 
+                                <cursorName> 
+                                <kindOfSelect> 
+                                <sqlSelectBlock>
+<cursorName>               ::= <variableName> - <regularTdlMetaCommands>
+<kindOfSelect>             ::=  
+                                'SQL' 
+                              | 'CSV'
+                              | 'JSON'
+                              | 'XMI'
+<sqlSelectBlock>           ::=   
+                                'SELECT' <columnNames> 
+                                 'FROM' <sourceDataRef> 
+                                 'WHERE' <BooleanExpression> 
+                                 'ORDER BY' <columnAlias> <OptionalComma>
+<columnNames>              ::= '*' | <columnNameRef>+
+<columnNameRef>            ::=  
+                               [<tableAlias><dot>]
+                                <columnName> 
+                               [<columnAlias>]
+                               [<OptionalComma>]
+queryReserveWords          ::=  
+                                'SELECT'
+                              | 'FROM'
+                              | 'WHERE'
+                              | 'ORDER'
+                              | 'BY'
+<sqlObjectName>            ::= <variableName> - queryReserveWords
+<sqlSchemaName>            ::= <sqlObjectName>
+<tableAlias>               ::= <sqlObjectName>
+<columnName>               ::= <sqlObjectName>
+<columnAlias>              ::= <sqlObjectName>
+<sourceDataRef>            ::= 
+                                  <tableNameRef> 
+                                  <tableAlias> 
+                                | <osFileSpec> 
+                                  <tableAlias>
+<tableNameRef>             ::= [<sqlSchemaName>.] <tableName>
+<tableName>                ::= <sqlObjectName>
+<OptionalComma>            ::= "_\, "
+                              | ε
+<loopStatement>            ::=  
+                                <metaCommandOp>  
+                                loopCommand 
+                                <cursorName>
+                                <argumentListValues>
+                                <loopContents> 
+                                <endLoopStatement>
+<endLoopStatement>         ::= <metaCommandOp> endLoopCommand
+<loopContents>             ::=  
+                                <block>  
+                                [ <loopControl> ]  
+                                <block>
+<loopControl>              ::=  
+                                <breakStatement>  
+                              | <moveStatement>
+<breakStatement>           ::= <metaCommandOp> breakCommand
+<moveStatement>            ::=  
+                                <metaCommandOp> moveCommand 
+                                moveDirection 
+                                <moveDistance>
+moveDirection              ::=  
+                                "+"
+                              | "-"
+<moveDistance>             ::= <integerValue>
+<metaIndicator>            ::= underscoreCharacter
+<metaCommandOp>            ::= <metaIndicator> numberSign
+<metaVarStart>             ::= <metaIndicator> ampersand
+<metaVarEnd>               ::= period
+<metaHostCmdIndicator>     ::= <metaIndicator> lessThanOperator
+<metaCommentIndicator>     ::= <metaIndicator> slash slash
+<metaBlockCommentStart>    ::= <metaIndicator> slash asterisk
+<metaBlockCommentEnd>      ::= <metaIndicator> asterisk slash
+<metaLineContinue>         ::= <metaIndicator> backSlash
+<metaTemplateLiteral>      ::= <metaIndicator> graveCharacter
+<metaConditionalOp>        ::= <metaIndicator> questionMark
+<metaConditionalDiv>       ::= <metaIndicator> colon
+<metaCommand>              ::=  
+                                 <metaCommandOp>
+                               | <metaVarStart>
+                               | <metaVarEnd>
+                               | <metaHostCmdIndicator>
+                               | <metaCommentIndicator>
+                               | <metaBlockCommentStart>
+                               | <metaBlockCommentEnd>
+                               | <metaLineContinue>
+                               | <metaTemplateLiteral>
+                               | <metaConditionalOp>
+                               | <metaConditionalDiv>
+<metaCommandIndicator>     ::=  
+                                 <metaCommandOp>
+                               | <metaConditionalOp>
+                               | <metaTemplateLiteral>
+                               | metaMacroBeginCommand
+                               | metaMacroEndCommand
+<regularTdlMetaCommands>   ::=  
+                                { breakCommand
+                                | cursorCommand
+                                | debugCommand
+                                | defineCommand
+                                | dumpCommand
+                                | echoCommand
+                                | eofCommand
+                                | exitCommand
+                                | elseCommand
+                                | elseIfCommand
+                                | endifCommand
+                                | endLoopCommand
+                                | ifCommand
+                                | ifDefineCommand
+                                | ifNotDefinedCommand
+                                | ifNotSetCommand
+                                | ifSet
+                                | loopCommand
+                                | macroBeginCommand
+                                | macroEndCommand
+                                | moveCommand
+                                | outputCommand
+                                | putCommand
+                                | putlineCommand
+                                | setCommand
+                                | undefineCommand
+                                | unsetCommand
+                                | wordwrapCommand
+                              }
+breakCommand               ::= "BREAK"
+cursorCommand              ::= "CURSOR"
+dumpCommand                ::= "DUMP"
+debugCommand               ::= "DEBUG" | "TRACE"
+defineCommand              ::= "DEFINE"
+echoCommand                ::= "ECHO"
+eofCommand                 ::= "EOF"
+endIfCommand               ::= "ENDIF"
+endLoopCommand             ::= "ENDLOOP"
+exitCommand                ::= "EXIT"
+ifCommand                  ::= "IF"
+ifDefineCommand            ::= "IFDEF"
+ifNotDefinedCommand        ::= "IFNDEF"
+ifSetCommand               ::= "IFSET"
+ifNotSetCommand            ::= "IFNSET"
+endIfCommand               ::= "ENDIF"
+elseIfCommand              ::= "ELSEIF"
+elseCommand                ::= "ELSE"
+includeCommand             ::= "INCLUDE"
+loopCommand                ::= "LOOP"
+macroBeginCommand          ::= "{"
+macroEndCommand            ::= "}"
+moveCommand                ::= "MOVE"
+outputCommand              ::= "OUTPUT"
+putCommand                 ::= "PUT"
+putlineCommand             ::= "PUTLINE"
+setCommand                 ::= "SET"
+undefineCommand            ::= "UNDEF"
+unsetCommand               ::= "UNSET"
+wordwrapCommand            ::= "WW"
+
+<tdlStandardFunction>    ::= 
+                             <controlFunction> 
+                           | <textFormattingFunction>
+
+<controlFunction>        ::= 
+                              "isEmpty" 
+                            | "isInitialized" 
+                            | "isNull" 
+                            | "isNumeric" 
+                            | "isOff" 
+                            | "isOn" 
+                            | "isOnOrOff" 
+                            | "isPathWithinRoot" 
+                            | "isUndefined" 
+                            | "isUsable" 
+                            | "isValidDecOctetValue" 
+                            | "startsAndEndsWithApostrophe" 
+                            | "startsAndEndsWithCaret" 
+                            | "startsAndEndsWithChevrons" 
+                            | "startsAndEndsWithLiteral" 
+                            | "startsAndEndsWithQuotes" 
+                            | "wordExistsInList"
+
+<textFormattingFunction> ::= 
+                             "center" 
+                           | "coalesce" 
+                           | "compressText" 
+                           | "eliminateNonAlphanumerics" 
+                           | "padLeft" 
+                           | "padRight" 
+                           | "parseArgumentStatement" 
+                           | "removeDuplicateWords" 
+                           | "toKebabCase" 
+                           | "toLowerCamelCase" 
+                           | "toLowerCase" 
+                           | "toLowerKebabCase" 
+                           | "toLowerSnakeCase" 
+                           | "toTitleCase" 
+                           | "toTitleSnakeCase" 
+                           | "toUpperCamelCase" 
+                           | "toUpperCase" 
+                           | "toUpperKebabCase" 
+                           | "toUpperSnakeCase" 
+                           | "toValidNameChars" 
+                           | "trim" 
+                           | "trimLeft" 
+                           | "trimRight"
+
+
+<resourceReference>       ::=  
+                                <angleBracketPath>
+                              | <doubleQuotePath>
+                              | <singleQuotePath>
+                              | <caretPath>
+<angleBracketPath>         ::=  
+                                leftAngleBracket 
+                                <osPath> 
+                                rightAngleBracket
+<doubleQuotePath>          ::= 
+                                quoteCharacter 
+                                <resourceIdentifier> 
+                                quoteCharacter
+<singleQuotePath>          ::= 
+                                apostropheCharacter 
+                                <resourceIdentifier> 
+                                apostropheCharacter
+<caretPath>                ::= caretChar <resourceIdentifier> caretChar
+<resourceIdentifier>       ::= 
+                                <osPath> 
+                              | <URI>
+<osPath>                   ::= 
+                                <unixPath> 
+                              | <windowsPath>
+<unixPath>                 ::= 
+                                <pathContent> 
+                                <unixPathSeparator> 
+                                <pathContent>
+<windowsPath>              ::= 
+                                <pathContent> 
+                                <windowsPathSeparator> 
+                                <pathContent>
+<pathContent>              ::= 
+                                 <osPathChar>
+                               | <osPathChar> <pathContent>
+<osPathChar>               ::= validFilenameChar*
+<validFilenameChar>        ::= 
+                                <alphanumericCharacter> 
+                                underscoreCharacter 
+                                <fileExtensionSeparator>
+<osFileSpec>               ::= 
+                               <osPath> 
+                               <filename> 
+                               <fileExtensionName>
+<filename>                 ::= <validFilenameChar>+
+<fileExtension>            ::= <fileExtensionSeparator> <fileExtensionName>
+<fileExtensionSeparator>   ::= <dot>
+<fileExtensionName>        ::= <validFilenameChar>+                                
+<unixPathSeparator>        ::= slash
+<windowsPathSeparator>     ::= backSlash
+<URI>                      ::= 
+                                <URL> 
+                              | <URN>
+<URL>                      ::= 
+                                <scheme> 
+                                <schemeDelimiter> 
+                                <authority> 
+                                [<path>] 
+                                [<query>] 
+                                [<fragment>]
+<URN>                      ::= 
+                                <uniformResourceName> 
+                                <namespaceIdentifier> 
+                                colon 
+                                <namespaceSpecificString>
+<scheme>                   ::= 
+                                <alphabetLetter> 
+                                [ <alphabetLetter> 
+                                  | digit 
+                                  | plusSign 
+                                  | <minusSign> 
+                                  | <dot> 
+                                ]*
+<authority>                ::= 
+                               [ <userinfo> atSign ] 
+                                 <host> 
+                               [ colon <port> ]
+<userinfo>                 ::= 
+                                <unreserved> 
+                              | <pct-encoded> 
+                              | semicolon 
+                              | colon 
+                              | ampersand 
+                              | assignmentOperator
+<host>                     ::= 
+                                <ipLiteral> 
+                              | <ipV4Address> 
+                              | <reg-name>
+<port>                     ::= digit*
+<path>                     ::= <segment>  
+                                ( slash <segment> )*
+<segment>                  ::= <uriPathChar>*
+<uriPathChar>              ::= 
+                                <unreserved> 
+                              | <pct-encoded> 
+                              | colon 
+                              | atSign 
+                              | ampersand 
+                              | assignmentOperator 
+                              | plusSign
+                               | dollarSign 
+                              | comma
+<query>                    ::= 
+                                <uriPathChar> 
+                              | slash 
+                              | questionMark
+<fragment>                 ::= 
+                               <uriPathChar> 
+                               | slash 
+                               | questionMark
+<unreserved>               ::= 
+                                <alphabetLetter> 
+                              | digit 
+                              | <minusSign> 
+                              | <dot> 
+                              | underscoreCharacter 
+                              | tildeCharacter
+<pct-encoded>              ::= 
+                                percentSign 
+                                <hexaDecimalDigit> 
+                                <hexaDecimalDigit>
+<namespaceIdentifier>      ::= 
+                                <alphabetLetter> 
+                                <alphabetLetter> 
+                                digit 1*31(<sub-delims> 
+                                slash 
+                                <unreserved>)
+<namespaceSpecificString>  ::= 
+                               <unreserved> 
+                              | <pct-encoded> 
+                              | <sub-delims> 
+                              | colon 
+                              | atSign
+<ipLiteral>                ::= [ <ipV6Address> 
+                                | <ipVFuture> 
+                              ]
+<ipVFuture>                ::= undefined
+<ipV6Address>              ::= 
+                               [ <hexaDecimalValue> 
+                                   (":" <hexaDecimalValue>){7}  /* Repeats 7 times */
+                                     <ipV6-LS32>
+                               ]
+<ipV6-LS32>                ::= 
+                               [ <hexaDecimalValue> 
+                                ":" <hexaDecimalValue> /* 32-bits */
+                                 | <ipV4Address>
+                               ]
+<ipV4Address>              ::= 
+                                <decOctetValue> 
+                                <dot>
+                                   <decOctetValue> 
+                                <dot> 
+                                  <decOctetValue> 
+                                <dot> 
+                                  <decOctetValue>
+<schemeDelimiter>          ::= slash slash <dot>
+<uniformResourceName>      ::= "urn" colon
+
+<variableName>             ::= 
+                                <alphabetLetter> 
+                                <nonInitialNameChar>*
+<nonInitialNameChar>       ::= 
+                                <alphanumericCharacter> 
+                              | underscoreCharacter
+<valueOfVariable>          ::= <allCharactersToEOL>
+
+
+<argumentListValues>       ::= 
+                                 <argument> 
+                               | <namedArgument>
+<argument>                 ::= <nonQuotedLiteral>
+<namedArgument>            ::= 
+                                <argumentName> assignmentOperator
+                                + [ <nonQuotedLiteral>
+                                    | <quotedLiteral>
+                                  ]
+<string>                   ::= 
+                                 <nonQuotedLiteral>
+                               | quoteCharacter
+                               | apostropheCharacter
+
+<dataTypeNames>            ::= 
+                                 "boolean"
+                               | "character"
+                               | "decOctetValue"
+                               | "floatingPoint"
+                               | "hexCharacter"
+                               | "hexaDecimalDigit"
+                               | "hexaDecimalValue"
+                               | "numeric"
+                               | "integer"
+                               | "string"
+<dataTypeValues>          ::= 
+                                 <booleanValue>
+                               | <characterValue>
+                               | <decOctetValue>
+                               | <floatingPointValue>
+                               | hexCharacter
+                               | <hexaDecimalDigit>
+                               | <hexaDecimalValue>
+                               | <integerValue>
+                               | <numricValue>
+                               | <stringValue>
+                              
+<booleanValue>             ::=     
+                                 <true>   
+                               | <false>
+<true>                     ::= 
+                                 "true"  
+                               | "on"    
+                               | "yes"   
+                               | "enable"    
+                               | "1"
+<false>                    ::= 
+                                 "false"   
+                               | "off"   
+                               | "no"    
+                               | "disable"   
+                               | "0"
+<decOctetValue>            ::= 
+                                 <digit>                
+                               | "1"<digit> <digit>   
+                               | "2" %x30-34<digit>   
+                               | "25" %x30-35   
+<floatingPointValue>       ::=  
+                              [ <unaryMathOperator> ]
+                              ( digit+ decimalPoint digit* )
+                              [ <exponentialNotation> ]
+<exponentialNotation>      ::= 
+                               ( "E" | "e" ) 
+                               [ <unaryMathOperator> ] 
+                               digit+
+decimalPoint               ::= period
+
+<hexaDecimalDigit>         ::=  
+                                 <digit>  
+                               | hexCharacter
+hexCharacter               ::= 
+                                 'a' | 'b' | 'c' | 'd' | 'e' | 'f'
+                               | 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
+digit                      ::= 
+                                "0" | "1" | "2" | "3" | "4"
+                              | "5" | "6" | "7" | "8" | "9"
+<hexaDecimalValue>         ::= 1*4<hexaDecimalDigit>   
+<integerValue>             ::= 
+                              [<uniaryMathOperator>] 
+                               digit+
+<numericValue>             ::= <decOctetValue>
+                               | <floatingPointValue>
+                               | <hexaDecimalValue>
+                               | <integerValue>
+<stringValue>               ::=   
+                                 <nonQuotedLiteral>
+                               | <quotedLiteral>
+<quotedLiteral>            ::= 
+                                 <singleQuotedLiteral> 
+                               | <doubleQuotedLiteral>
+<singleQuotedLiteral>      ::= 
+                                 apostropheCharacter   
+                                 <stringContents> - apostropheCharacter 
+                                 apostropheCharacter
+<doubleQuotedLiteral>      ::= 
+                                 quoteCharacter   
+                                 <stringContents> - quoteCharacter
+                                 quoteCharacter
+<stringContents>           ::= <characterValue>*
+                                 
+<nonQuotedLiteral>         ::= <nonQuotedLiteralChar>+
+<nonQuotedLiteralChar>     ::= <characterValue> - whitespace
+<characterValue>           ::=   
+                                 <alphanumericCharacter>
+                               | <punctuation>
+                               | <mathOperator>
+                               | <enclosingGlyphs>
+                               | <majorCurrencySymbol>
+                               | <logicalOperator>
+                               | <diacritic>
+                               | <specialSymbol>
+                               | underscoreCharacter
+                               | <whitespace>
+                               | <keyboardSpecialCharacter>
+                               | <genericCharacter>
+<alphanumericCharacter>    ::= 
+                                 <alphabetLetter> 
+                               | digit
+digit                      ::=  
+                                 '0' | '1' | '2' | '3'  
+                                | '4'| '5' | '6' | '7' 
+                                | '8' | '9'
+<alphabetLetter>           ::= 
+                               uppercaseLetter 
+                               | lowercaseLetter
+uppercaseLetter            ::= 
+                                 'A' | 'B' | 'C' | 'D' | 'E' 
+                               | 'F' | 'G'| 'H' | 'I' | 'J' 
+                               | 'K' | 'L' | 'M' | 'N' | 'O' 
+                               | 'P' | 'Q' | 'R' | 'S' | 'T' 
+                               | 'U' | 'V' | 'W' | 'X' | 'Y' 
+                               | 'Z'
+lowercaseLetter            ::= 
+                                 'a' | 'b' | 'c' | 'd' | 'e' 
+                               | 'f' | 'g' | 'h' | 'i' | 'j' 
+                               | 'k' | 'l' | 'm' | 'n' | 'o' 
+                               | 'p' | 'q' | 'r' | 's' | 't' 
+                               | 'u' | 'v' | 'w' | 'x' | 'y' 
+                               | 'z'
+<punctuation>              ::=  
+                                period 
+                              | comma 
+                              | colon 
+                              | semicolon
+                              | questionMark
+                              | exclamationMark 
+                              | <literalCharacter> 
+                              | <parenthesesSet>
+                              | <squareBracketSet> 
+                              | <braceSet>
+<enclosingGlyphs>          ::=  
+                                <parenthesesSet>  
+                              | <braceSet> 
+                              | <squareBracketSet>
+                              | <angleBracketSet>
+<parenthesesSet>           ::=  
+                                leftParentheses   
+                              | rightParentheses
+<braceSet>                 ::=  
+                                leftBrace         
+                              | rightBrace
+<squareBracketSet>         ::=  
+                                leftSquareBracket 
+                              | rightSquareBracket
+<angleBracketSet>          ::=  
+                                leftAngleBracket 
+                              | rightAngleBracket
+leftAngleBracket           ::= '<'
+rightAngleBracket          ::= '>'
+<literalCharacter>         ::=  
+                                 quoteCharacter 
+                               | apostropheCharacter
+quoteCharacter             ::= '\"'
+apostropheCharacter        ::= '\''
+escapeCharacter            ::= '\\'
+
+<mathOperator>             ::=  
+                                 <binaryMathOperator> 
+                               | <uniaryMathOperator>
+                               | <comparisonOperator>
+<binaryMathOperator>       ::=  
+                                 additionOperator 
+                               | substractOperator 
+                               | multiplyOperator 
+                               | divideOperator 
+                               | powerOperator 
+                               | moduloOpertor
+<uniaryMathOperator>       ::=  
+                                negativeSign 
+                               | positiveSign 
+                               | logicalNot
+additionOperator           ::= '+'
+substractOperator          ::= '-'
+multiplyOperator           ::= '*'
+divideOperator             ::= '/'
+powerOperator              ::= '^'
+moduloOpertor              ::= '%'
+negativeSign               ::= '-'
+positiveSign               ::= '+'
+logicalNot                 ::= '!'
+equalTo                    ::= '=='
+notEqualTo                 ::= '!='
+                               | '<>'
+assignmentOperator         ::= '='
+lessThanOperator           ::= '<'
+<lessThanEqualOperator>    ::=  
+                                lessThanOperator 
+                               | equalTo
+greaterThanOperator        ::= '>'
+<greaterThanEqualOperator>  ::=  
+                                greaterThanOperator 
+                               | equalTo
+<comparisonOperator>      ::=  
+                                <comparisonOperator> 
+                               | <notEqualTo> 
+                               | lessThanOperator 
+                               | greaterThanOperator 
+                               | <lessThanEqualOperator> 
+                               | greaterThanOperator
+<logicalOperator>          ::=  
+                                logicalAnd 
+                               | logicalOr
+<logicalAnd>               ::= ampersand
+<logicalOr>                ::= verticalBar
+<specialSymbol>            ::=  
+                                atSign 
+                              | numberSign 
+                              | graveCharacter 
+                              | tildeCharacter
+<majorCurrencySymbol>      ::=  
+                                usDollar 
+                              | euro 
+                              | britishPound 
+                              | japaneseYen 
+                              | indianRupee
+usDollar                   ::= '$'
+euro                       ::= '€'
+britishPound               ::= '£'
+japaneseYen                ::= '¥'
+indianRupee                ::= '₹'
+<diacritic>                ::=  
+                                 <acuteAccent> 
+                               | <graveAccent> 
+                               | <circumflexAccent> 
+                               | <tildeAccent> 
+                               | <umlautAccent>
+<acuteAccent>              ::=  
+                                acuteUpperAccent  
+                              | acuteLowerAccent
+<graveAccent>              ::=  
+                                graveUpperAccent  
+                              | graveLowerAccent
+graveUpperAccent           ::= 'À' | 'È' | 'Ì' | 'Ò' | 'Ù'
+graveLowerAccent           ::= 'à' | 'è' | 'ì' | 'ò' | 'ù'
+<circumflexAccent>         ::= 
+                                 circumflexUpperAccent> 
+                               | circumflexLowerAccent
+circumflexUpperAccent      ::= 'Â' | 'Ê' | 'Î' | 'Ô' | 'Û'
+circumflexLowerAccent      ::= 'â' | 'ê' | 'î' | 'ô' | 'û'
+<tildeAccent>              ::=  
+                                tildeUpperAccent
+                              | tildeLowerAccent
+tildeUpperAccent           ::= 'Ã' | 'Ñ' | 'Õ'
+tildeLowerAccent           ::= 'ã' | 'ñ' | 'õ'
+<umlautAccent>             ::=  
+                                umlautUpperAccent 
+                              | umlautLowerAccent
+umlautUpperAccent          ::= 'Ä' | 'Ë' | 'Ï' | 'Ö' | 'Ü'
+umlautLowerAccent          ::= 'ä' | 'ë' | 'ï' | 'ö' | 'ü'
+<whitespace>               ::=  
+                                spaceCharacter
+                              | tabCharacter
+                              | newLineCharacter
+                              | returnCharacter
+                              | formFeedharacter
+                              | verticalTab
+                              | requiredBlank
+<endOfLine>                ::=  
+                                <unixLineEnd> 
+                              | <windowsLineEnd>
+<unixLineEnd>              ::= newLineCharacter
+<windowsLineEnd>           ::=  
+                                returnCharacter 
+                               | newLineCharacter
+uriSpecialCharacters       ::=  
+                                 slash
+                               | <dot>
+                               | period
+                               | colon
+                               | questionMark
+                               | plusSign
+                               | <minusSign>
+                               | ampersand
+                               | underscoreCharacter
+                               | atSign
+                               | numberSign
+                               | tildeCharacter
+                               | comma
+                               | semicolon
+                               | dollarSign
+ <keyboardSpecialCharacter>  ::=  
+                                 tildeCharacter
+                               | graveCharacter
+                               | exclamationMark
+                               | <bangCharacter>
+                               | atSign
+                               | numberSign
+                               | <hashSign>
+                               | <poundSign>
+                               | dollarSign
+                               | percentSign
+                               | caretChar
+                               | ampersand
+                               | asterisk
+                               | leftParentheses
+                               | rightParentheses
+                               | hyphen
+                               | <minusSign>
+                               | underscoreCharacter
+                               | equalSign
+                               | plusSign
+                               | verticalBar
+                               | backSlash
+                               | leftSquareBracket
+                               | rightSquareBracket
+                               | leftBrace
+                               | rightBrace
+                               | semicolon
+                               | colon
+                               | slash
+                               | apostrophe
+                               | quote
+                               | backslash
+                               | questionMark
+                               | period
+                               | GreaterThanCharacter
+                               | comma
+                               | lessThanCharacter
+ampersand                   ::= '&'
+apostrophe                  ::= '\''
+asterisk                    ::= '*'
+atSign                      ::= '@'
+backSlash                   ::= '\\'
+caretChar                   ::= '^'
+colon                       ::= ':'
+comma                       ::= ','
+dollarSign                  ::= '$'
+equalSign                   ::= '='
+exclamationMark             ::= '!'
+formFeedharacter            ::= '\f'
+graveCharacter              ::= '\`'
+GreaterThanCharacter        ::= '>'
+hyphen                      ::= '-'
+leftBrace                   ::= '{'
+leftParentheses             ::= '('
+leftSquareBracket           ::= '['
+lessThanCharacter           ::= '<'
+newLineCharacter            ::= '\n'
+numberSign                  ::= '#'
+percentSign                 ::= '%'
+period                      ::= '.'
+plusSign                    ::= '+'
+questionMark                ::= '?'
+quote                       ::= '\"'
+requiredBlank               ::= '\' ''
+returnCharacter             ::= '\r'
+rightBrace                  ::= '}'
+rightParentheses            ::= ')'
+rightSquareBracket          ::= ']'
+semicolon                   ::= ';'
+slash                       ::= '/'
+spaceCharacter              ::= ' '
+tabCharacter                ::= '\t'
+tildeCharacter              ::= '~'
+underscoreCharacter         ::= '_'
+verticalBar                 ::= '|'
+verticalTab                 ::= '\v'
+<bangCharacter>             ::= exclamationMark
+<dot>                       ::= period
+<hashSign>                  ::= numberSign
+<minusSign>                 ::= hyphen
+<poundSign>                 ::= numberSign
+<genericCharacter>          ::= .  ; Match any character
+<error>                     ::= <unexpectedInput>
+<unexpectedInput>           ::=  
+                                <characterValue> - <endOfLine>
+                              | <characterValue> 
+                              | <endOfLine>

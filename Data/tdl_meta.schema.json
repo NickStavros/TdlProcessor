@@ -1,0 +1,90 @@
+{
+  "_classification": 
+  { "level": "PUBLIC",
+    "schema": "tdl_classification.schema.json"
+  },
+
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "TDL Metadata Schema",
+  "description": "Schema for defining metadata used in TDL Processor.",
+  "type": "object",
+
+  "properties":
+  { "fileName":
+    { "type": "string",
+      "description": "The name of the JSON file."
+    },
+
+    "description": 
+    { "type": "string",
+      "description": "Brief description of the JSON file."
+    },
+
+    "license":
+    { "type": "string",
+      "enum": ["MIT"],
+      "description": "The license under which the file is provided."
+    },
+
+    "schema": 
+    { "type": "string",
+      "description": "Reference to the JSON schema file that validates this metadata."
+    },
+
+    "lastRevision": 
+    { "type": "string",
+      "format": "date",
+      "description": "Last revision date in ISO 8601 format (YYYY-MM-DD)."
+    },
+
+    "lastRevisionDetails":
+    { "type": "string",
+      "description": "Additional details about the last revision (e.g., changes made, purpose, etc.)."
+    },
+
+    "reviewers":
+    { "type": "array",
+      "description": "List of human reviewers.",
+      "items":
+    { "type": "object",
+      "properties": 
+      { "name": 
+        { "type": "string", 
+          "description": "Reviewer's full name." 
+        },
+        "role": 
+        { "type": "string", 
+          "description": "Reviewer's role (e.g., Code Review, Security Review)."
+        }
+      },
+      "required": ["name", "role"]
+      }
+    },
+
+    "automatedReviews":
+    { "type": "array",
+      "description": "Automated tools that have reviewed the file.",
+      "items": 
+      { "type": "object",
+        "properties": 
+        { "tool": 
+          { "type": "string", 
+            "description": "Name of the automated review tool." 
+          },
+          "purpose": 
+          { "type": "string", 
+            "description": "Purpose of the automated tool." 
+          },
+          "lastRun": 
+          { "type": "string", 
+            "format": "date", 
+            "description": "Last execution date of the tool." 
+          }
+        },
+        "required": [ "tool", "purpose" ]
+      }
+    }
+  },
+
+  "required": [  "fileName", "license", "schema", "lastRevision" ]
+}

@@ -1,0 +1,79 @@
+{ "_classification": 
+  { "level": "PUBLIC"
+  },
+
+  "_meta": 
+  { "schema": "tdl_meta.schema.json",
+    "fileName": "pre_commit_config.json",
+    "description": "Configuration file for the TDL Processor pre-commit hook.",
+    "license": "MIT",
+    "lastRevision": "2025-02-24",
+    "lastRevisionDetails": "Added classification rules and enhanced configuration options.",
+    "reviewers": 
+    [ { "name": "R. W. Stavros, Ph.D.", "role": "Code Review" },
+      { "name": "John Doe", "role": "Security Review" }
+    ],
+    "automatedReviews": 
+    [ { "tool": "Hamish I. MacCloud, AIA", "purpose": "AI Code Review" },
+      { "tool": "JSONLint", "purpose": "Schema Validation", "lastRun": "2025-02-24" }
+    ]
+  },
+
+  "pre_commit":
+  { "classification_labels": 
+      [ "PUBLIC", "UNCLASSIFIED", "SENSITIVE", "SECRET", "TOP SECRET" ],
+    "classification_rules": 
+      { "unclassified": "^(PUBLIC|UNCLASSIFIED)$",
+        "sensitive": "^(PUBLIC|UNCLASSIFIED|SENSITIVE)$",
+        "secret": "^(PUBLIC|UNCLASSIFIED|SENSITIVE|SECRET)$",
+        "topsecret": "^(PUBLIC|UNCLASSIFIED|SENSITIVE|SECRET|TOP SECRET)$"
+      },
+    "banner_styles": 
+      [ { "name": "default",
+          "pattern": "^# -{78}\\n# (PUBLIC|UNCLASSIFIED|SENSITIVE|SECRET|TOP SECRET)\\n# -{78}$"
+        },
+        { "name": "xml_style",
+          "pattern": "^# <banner>\\n# (PUBLIC|UNCLASSIFIED|SENSITIVE|SECRET|TOP SECRET)\\n# </banner>$"
+        },
+        { "name": "custom_1",
+          "pattern": "^# -+={5}-+={5}-+={5}-+={5}-+={5}-+={5}-+$\\n# (PUBLIC|UNCLASSIFIED|SENSITIVE|SECRET|TOP SECRET)$"
+        }
+      ],
+   "file_exclusions": 
+      [ "*.log", "*.tmp", "*.bak", ".DS_Store",
+        "*.exe", "*.dll", "*.bin", "*.dat", "*.so", "*.a", "*.o", "*.lib",
+        "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.tiff", "*.ico",
+        "*.mp3", "*.wav", "*.flac", "*.aac", "*.ogg", "*.wma",
+        "*.mp4", "*.mov", "*.avi", "*.mkv", "*.wmv", "*.webm",
+        "*.zip", "*.tar", "*.gz", "*.bz2", "*.xz", "*.7z", "*.rar",
+        "*.pdf", "*.doc", "*.docx", "*.ppt", "*.pptx", "*.xls", "*.xlsx",
+        "*.iso", "*.img", "*.dmg", "*.vmdk",
+        "*.pyc", "*.class", "*.jar", "*.war",
+        "*.git/*", ".gitignore", "node_modules/*", "vendor/*", "venv/*"
+      ],
+    "metadata_checks_enabled": true,
+    "security_checks_enabled": true,
+    "automated_tools_enabled": true,
+
+    "scan_scope":
+    { "default_path": "",
+      "allow_overrides": true
+    },
+
+    "tools":
+    { "shellcheck": 
+      { "enabled": true,
+        "exclude": ["tests/", "scripts/legacy/"]
+      },
+      "jsonlint": 
+      { "enabled": true,
+        "exclude": ["data/old_json/"]
+      }
+    },
+    "spell": 
+    { "enabled": true,
+      "exclude": ["docs/technical/", "CHANGELOG.md"],
+      "file_types": ["txt", "md"]
+    }
+  }
+}

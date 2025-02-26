@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Current File in NodeJS",
+      "type": "shell",
+      "command": "node",
+      "args": 
+      [ "${file}",
+        "${workspaceFolder}/Templates/HelloWorld.tdl",
+        "{\"companyName\": \"Jackrabbit Consulting, Inc.\", \"companyAddress\": \"13639 Jackrabbit Rd, Poway, CA, USA, 92064\", \"companyPhone\": \"1+858-555-1212\"}",
+        "three"
+      ],
+      "presentation": 
+      {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}

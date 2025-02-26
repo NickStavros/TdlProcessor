@@ -1,0 +1,28 @@
+00000
+  _#PUTLINE _&companyName.
+  _#PUT 11111
+  _#PUTLINE ggg
+22222
+66666
+_#EXIT
+
+Dear _&poc.:
+
+Today, on _<new Date().toLocaleDateString()_< at _<new Date().toLocaleTimeString()_<., you expressed interest in the TdlProcessor.
+
+Just wanted to say Hello. We have your address as:
+
+_#PUTLINE _&companyName.
+_#PUT _&companyAddress-firstAddressLine.
+_#IF ( ! isEmpty ( "_&companyAddress-secondAddressLine." ) )
+_#PUT , _&companyAddress-secondAddressLine.
+_#ENDIF
+_#PUT , _&companyAddress-city.
+_#PUT , _&companyAddress-state.
+_#PUTLINE    
+ssss
+Thank you
+
+The TDL Pilot Team
+
+_#EXIT

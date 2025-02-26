@@ -1,0 +1,62 @@
+{
+  "_classification": 
+  { "level": "PUBLIC",
+    "schema": "tdl_classification.schema.json"
+  },
+
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "TDL Symbols Schema",
+  "type": "object",
+
+  "properties": 
+  { "_meta": 
+    { "type": "object",
+      "description": "Metadata about this document.",
+      "properties":
+      { "schema":
+        { "type": "string",
+          "const": "tdl_meta.schema.json",
+          "description": "Reference to the JSON schema file that validates this metadata."
+        }
+      },
+      "$ref": "tdl_meta.schema.json"
+    },
+
+    "symbols": 
+    { "type": "array",
+      "description": "List of mathematical and technical symbols",
+      "items": 
+      { "type": "object",
+        "properties": 
+        { "name": 
+          { "type": "string", 
+            "description": "Symbol name" 
+          },
+          "unicode": 
+          { "type": "string", 
+            "pattern": "^U\\+[0-9A-F]{4,6}$", 
+            "description": "Unicode code point" 
+          },
+          "latex": 
+          { "type": "string", 
+            "description": "LaTeX representation" 
+          },
+          "category": 
+          { "type": "string",
+            "enum": 
+              [ "Math", 
+                "Greek", 
+                "Operators", 
+                "Arrows", 
+                "Technical"
+              ],
+            "description": "Classification of the symbol"
+          }
+        },
+        "required": ["name", "unicode"]
+      }
+    }
+  },
+
+  "required": ["_classification", "_meta", "symbols"]
+}

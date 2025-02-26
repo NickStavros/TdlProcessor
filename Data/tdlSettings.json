@@ -1,0 +1,44 @@
+{ "_classification": 
+  { "level": "PUBLIC",
+    "schema" : "tdl_classification.schema.json"
+  },
+  
+  "_meta": 
+  { "schema": "tdl_meta.schema.json",
+    "fileName": "tdlSettings.json",
+    "description": "Configuration file for TDL Processor settings.",
+    "license": "MIT",
+    "lastRevision": "2025-02-24",
+    "lastRevisionDetails": "Updated metadata schema to include detailed revision notes.",
+    "reviewers": 
+    [ { "name": "R. W. Stavros, Ph.D.", "role": "Code Review" },
+      { "name": "John Doe", "role": "Security Review" }
+    ],
+    "automatedReviews": 
+    [ { "tool": "Hamish I. MacCloud, AIA", "purpose": "AI Code Review" },
+      { "tool": "JSONLint", "purpose": "JSON Validation", "lastRun": "2025-02-24" }
+    ]
+  },
+  "$schema": "tdl_settings.schema.json",
+  "companyName": "Template Foundry Inc.",
+  "companyAddress": 
+  { "firstAddressLine": "444 Template Foundry Road",
+    "secondAddressLine": "",
+    "city": "San Diego",
+    "state": "California",
+    "country": "USA",
+    "mailCode": "92050"
+  },
+  "companyPhone": "1-800-555-1212",
+  "webSite": "TemplateFoundry.com",
+  "contactEmail": "support@templateFoundry.com",
+  "poc": "Hamish I. MacCloud",
+  "authors": 
+  [ "R. W. Stavros, PhD",
+    "Hamish I. MacCloud, AIA"
+  ],
+  "metaEchoOutput": true,
+  "metaEchoInput": true,
+  "metaEchoInfo": true,
+  "systemModelVersion": "0.0.1a"
+}

@@ -1,0 +1,110 @@
+{ "_meta": 
+  { "schema_version": "1.0",
+    "generated_by": "TDL Processor",
+    "last_modified": "2025-02-23",
+    "license": "MIT",
+    "schema": "tdl_meta.schema.json",
+    "authors": 
+    [ "R. W. Stavros, Ph.D.",
+      "Hamish I. MacCloud, AIA"
+    ]
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TDL Processor Settings Schema",
+  "description": 
+    "Schema for validating TdlSettings.json configuration file.",
+
+  "type": "object",
+
+  "properties": 
+  { "companyName": 
+    { "type": "string",
+      "description": 
+        "The name of the company using the TDL Processor."
+    },
+
+    "companyAddress": 
+    { "type": "object",
+      "description": "Physical address of the company.",
+      "properties": 
+      { "firstAddressLine": { "type": "string" },
+        "secondAddressLine": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "country": { "type": "string" },
+        "mailCode": { "type": "string" }
+      },
+      "required": 
+      [ "firstAddressLine",
+        "city",
+        "state",
+        "country",
+        "mailCode"
+      ]
+    },
+
+    "companyPhone": 
+    { "type": "string",
+      "description": "The primary contact phone number."
+    },
+
+    "webSite": 
+    { "type": "string",
+      "format": "uri",
+      "description": "The official company website."
+    },
+
+    "contactEmail": 
+    { "type": "string",
+      "format": "email",
+      "description": "The support or primary contact email address."
+    },
+
+    "poc": 
+    { "type": "string",
+      "description": 
+        "Primary point of contact for TDL Processor administration."
+    },
+
+    "authors": 
+    { "type": "string",
+      "description": 
+        "List of authors responsible for this settings file."
+    },
+
+    "metaEchoOutput": 
+    { "type": "boolean",
+      "description": 
+        "Enable or disable metadata echoing in output."
+    },
+
+    "metaEchoInput": 
+    { "type": "boolean",
+      "description": 
+        "Enable or disable metadata echoing in input."
+    },
+
+    "metaEchoInfo": 
+    { "type": "boolean",
+      "description": 
+        "Enable or disable metadata information output."
+    },
+
+    "systemModelVersion": 
+    { "type": "string",
+      "description": 
+        "Version of the system model."
+    }
+  },
+
+  "required": 
+  [ "companyName",
+    "companyAddress",
+    "companyPhone",
+    "webSite",
+    "contactEmail",
+    "poc",
+    "authors",
+    "systemModelVersion"
+  ]
+}

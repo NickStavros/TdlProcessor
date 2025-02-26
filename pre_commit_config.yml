@@ -1,0 +1,74 @@
+# -----------------------------------------------------------------------------
+# PUBLIC
+# -----------------------------------------------------------------------------
+# GitHub & Local Pre-Commit Hook Configuration
+#
+# This file configures the pre-commit hooks for both local development and
+# GitHub Actions. It ensures that commits meet quality and security standards.
+#
+# 🚀 Deployment Instructions:
+# - For local testing, place this in `TemplateDL/`
+# - For GitHub Actions, copy this file to `.github/workflows/pre-commit.yml`
+# - See full instructions in the project README.
+#
+# -----------------------------------------------------------------------------
+
+name: Pre-Commit Hook Checks
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:  # Allow manual execution from GitHub Actions UI
+
+env:
+  LOCAL_MODE: false  # Set to 'true' for local testing, 'false' for GitHub Actions
+
+jobs:
+  pre-commit-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🛠️ Set Up Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y shellcheck jsonlint aspell
+
+      - name: 🔍 Run Pre-Commit Hook
+        run: |
+          if [[ "$LOCAL_MODE" == "true" ]]; then
+            echo "Running in LOCAL mode"
+            bash ./pre-commit.sh --local
+          else
+            echo "Running in GITHUB mode"
+            bash ./pre-commit.sh
+          fi
+
+      - name: 📜 Validate Commit Message Format
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          if ! [[ "$COMMIT_MSG" =~ ^(feat|fix|docs|style|refactor|perf|test|chore)\(.*\): .{10,}$ ]]; then
+            echo "❌ Invalid commit message format!"
+            echo "✅ Expected format: 'feat(parser): add new parsing algorithm'"
+            exit 1
+          fi
+        env:
+          COMMIT_MESSAGE_REGEX: "^(feat|fix|docs|style|refactor|perf|test|chore)\\(.*\\): .{10,}$"
+
+      - name: 🛠️ Run Automated Linting & Security Checks
+        run: bash ./pre-commit.sh -a
+
+      - name: ✅ Success Notification
+        if: success()
+        run: echo "All pre-commit checks passed ✅"
+
+      - name: ❌ Failure Notification
+        if: failure()
+        run: echo "Some checks failed ❌"

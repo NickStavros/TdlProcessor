@@ -1,0 +1,43 @@
+{ "version": "0.2.0",
+  "configurations": 
+  [ {
+      "type": "node",
+      "request": "launch",
+      "name": "Run TdlProcessor.js",
+      "program": "${workspaceFolder}/Code/TdlProcessor.js",
+      "args": 
+      [ "--input",      "./Templates/HelloWorld.tdl",
+        "--output",     "./Output/HelloWorld.text",
+        "--settings",   "./Data/tdlSettings.json",
+        "--user",       "John Doe, Jr."
+      ],
+      "console": "integratedTerminal"
+    }
+  ]
+}
+
+
+/*
+
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+  
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${file}",
+      "args": ["./Templates/HelloWorld.tdl", "{ \"companyName\": \"Jackrabit Consulting, Inc.\" }", "three" ]
+      // "args": ["./Templates/HelloWorld.tdl", "./Data/tdlSettings.json", "three" ]
+      // "args": ["./Templates/HelloWorld.tdl", "./Data/booksExample.json", "three" ]
+    }
+  ]
+}
+*/
