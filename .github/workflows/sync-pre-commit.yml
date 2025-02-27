@@ -1,0 +1,62 @@
+---
+# yamllint disable-line-length
+# -----------------------------------------------------------------------------
+# GitHub Workflow: Auto-Sync Pre-Commit Configuration
+#
+# 📝 Purpose:
+# - Syncs `TemplateDL/pre_commit_config.yml` to
+#          `.github/workflows/pre-commit.yml`
+# - Ensures GitHub runs the latest pre-commit checks automatically
+#
+# 🚀 Deployment Instructions:
+# 1️⃣ Ensure this file is inside `.github/workflows/`
+# 2️⃣ Ensure `TemplateDL/pre_commit_config.yml`
+#           is the **single source of truth**
+# 3️⃣ Add and push this workflow manually (ONLY ONCE):
+#
+#     git add .github/workflows/sync-pre-commit.yml
+#     git commit -m "Added workflow to auto-sync pre-commit config"
+#     git push origin main
+#
+# 4️⃣ Whenever `pre_commit_config.yml` is updated, this workflow:
+#     ✅ Copies it to `.github/workflows/pre-commit.yml`
+#     ✅ Ensures GitHub Actions uses the latest version
+#
+# -----------------------------------------------------------------------------
+
+name: Sync Pre-Commit Config
+
+"on":
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      manual_trigger:
+        description: "Manually trigger workflow"
+        required: false
+        default: false
+
+jobs:
+  sync-pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🔄 Sync Pre-Commit Config to Workflows
+        run: |
+          cp TemplateDL/pre_commit_config.yml \
+             .github/workflows/pre-commit.yml
+
+      - name: 📤 Commit and Push Updated Workflow
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email \
+                    "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/pre-commit.yml
+          git commit -m "🔄 Auto-synced pre-commit config from TemplateDL"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
