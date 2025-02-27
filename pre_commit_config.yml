@@ -1,5 +1,32 @@
+---
 # -----------------------------------------------------------------------------
 # PUBLIC
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Copyright (c) 2024 Dido Solutions Inc.
+# 
+# Author(s): 
+#   - Dido Solutions Inc.
+#   - R. W. "Nick" Stavros, Ph.D.
+#   - Hamish I. MacCloud, AIA
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 # -----------------------------------------------------------------------------
 # GitHub & Local Pre-Commit Hook Configuration
 #
@@ -12,10 +39,11 @@
 # - See full instructions in the project README.
 #
 # -----------------------------------------------------------------------------
+#....:....1....:....2....:....3....:....4....:....5....:....6....:....7....:....
 
 name: Pre-Commit Hook Checks
 
-on:
+"on":
   push:
     branches:
       - main
@@ -27,7 +55,7 @@ on:
   workflow_dispatch:  # Allow manual execution from GitHub Actions UI
 
 env:
-  LOCAL_MODE: false  # Set to 'true' for local testing, 'false' for GitHub Actions
+  LOCAL_MODE: false
 
 jobs:
   pre-commit-checks:
@@ -54,13 +82,16 @@ jobs:
       - name: 📜 Validate Commit Message Format
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
-          if ! [[ "$COMMIT_MSG" =~ ^(feat|fix|docs|style|refactor|perf|test|chore)\(.*\): .{10,}$ ]]; then
+          if ! [[ "$COMMIT_MSG" =~ \
+          ^(feat|fix|docs|style|refactor|perf|test|chore)\(.*\): .{10,}$ ]];then
             echo "❌ Invalid commit message format!"
             echo "✅ Expected format: 'feat(parser): add new parsing algorithm'"
             exit 1
           fi
         env:
-          COMMIT_MESSAGE_REGEX: "^(feat|fix|docs|style|refactor|perf|test|chore)\\(.*\\): .{10,}$"
+          COMMIT_MESSAGE_REGEX: >
+            ^(feat|fix|docs|style|refactor|perf|test|chore)
+            \(.*\): .{10,}$
 
       - name: 🛠️ Run Automated Linting & Security Checks
         run: bash ./pre-commit.sh -a
