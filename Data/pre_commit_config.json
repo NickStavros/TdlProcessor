@@ -39,7 +39,14 @@
           "pattern": "^# -+={5}-+={5}-+={5}-+={5}-+={5}-+={5}-+$\\n# (PUBLIC|UNCLASSIFIED|SENSITIVE|SECRET|TOP SECRET)$"
         }
       ],
-   "file_exclusions": 
+    "commitMessage": 
+      { "regex": "^(feat|fix|docs|style|refactor|perf|test|chore)\\(.*\\): .{10,}$",
+        "example": "feat(auth): Add JWT authentication support",
+        "minWords": 3,
+        "spellingThreshold": 60,
+        "reservedWords":  "feat,feature,fix,bugfix,docs,documentation,style,refactor,perf,performance,test,testing,chore,build"
+      },
+    "file_exclusions": 
       [ "*.log", "*.tmp", "*.bak", ".DS_Store",
         "*.exe", "*.dll", "*.bin", "*.dat", "*.so", "*.a", "*.o", "*.lib",
         "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.tiff", "*.ico",
