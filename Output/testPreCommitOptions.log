@@ -1,0 +1,148 @@
+-- Running testPreCommitOptions on Sun Mar  2 01:16:05 GMT 2025 -- Log File: ./../Output/testPreCommitOptions.log
+-- LOG_FILE set to: ./../Output/testPreCommitOptions.log
+==========================================
+-- Starting Test #1: Help Message (-h)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -h
+✅ Test #1: Help Message (-h) PASSED
+Usage: pre-commit.sh [options]
+Options:
+  -a, --all             Run all validation checks
+  -c, --commit-msg      Validate commit message (optional: specify file)
+  -d, --display-config  Show current pre-commit configuration
+  -h, --help            Show this help message
+  -m, --meta            Validate metadata in committed files
+  -p, --path <dir>      Specify directory for scan
+  -s, --security        Perform security level checks
+  -t, --tool <name>     Run a specific automated tool (or all if omitted)
+  -v, --verbose         Enable verbose logging
+-- finishing Test #1: Help Message (-h)
+<Results of Running Individual Test #1>
+==========================================
+-- Starting Test #2: Verbose Mode (-v)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -v
+✅ Test #2: Verbose Mode (-v) PASSED
+--   [INFO] 2025-03-02 01:16:05 -> RETURN_CODE 0
+--   [INFO] 2025-03-02 01:16:05 -> VALID_STATE 0
+--   [INFO] 2025-03-02 01:16:05 -> Completed Pre-Commit Hook Processing
+-- finishing Test #2: Verbose Mode (-v)
+<Results of Running Individual Test #2>
+==========================================
+-- Starting Test #3: Verbose Mode (-v)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -v false
+✅ Test #3: Verbose Mode (-v) PASSED
+-- finishing Test #3: Verbose Mode (-v)
+<Results of Running Individual Test #3>
+==========================================
+-- Starting Test #4: Display Config (-d)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -d
+✅ Test #4: Display Config (-d) PASSED
+-- finishing Test #4: Display Config (-d)
+<Results of Running Individual Test #4>
+==========================================
+-- Starting Test #5: Check Commit Message (-c)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -c commit-message.txt
+✅ Test #5: Check Commit Message (-c) PASSED
+--+++ [WARN] 2025-03-02 01:16:05 -> Commit message format does not match the expected pattern!
+--+++ [WARN] 2025-03-02 01:16:05 -> Expected format: feat(auth): Add JWT authentication support
+--+++ [WARN] 2025-03-02 01:16:05 -> Commit message does not contain a reserved keyword! Consider using one: feat,feature,fix,bugfix,docs,documentation,style,refactor,perf,performance,test,testing,chore,build
+--+++ [WARN] 2025-03-02 01:16:05 -> SpellCheck found 1 misspelled words:
+--+++ [WARN] 2025-03-02 01:16:05 ->   - pre
+-- finishing Test #5: Check Commit Message (-c)
+<Results of Running Individual Test #5>
+==========================================
+-- Starting Test #6: Validate Metadata (-m)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -m
+✅ Test #6: Validate Metadata (-m) PASSED
+-- finishing Test #6: Validate Metadata (-m)
+<Results of Running Individual Test #6>
+==========================================
+-- Starting Test #7: Specify Path for Validation (-p)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -p ./
+✅ Test #7: Specify Path for Validation (-p) PASSED
+-- finishing Test #7: Specify Path for Validation (-p)
+<Results of Running Individual Test #7>
+==========================================
+-- Starting Test #8: Perform Security Checks (-s)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -s
+✅ Test #8: Perform Security Checks (-s) PASSED
+-- finishing Test #8: Perform Security Checks (-s)
+<Results of Running Individual Test #8>
+==========================================
+-- Starting Test #9: Run Specific Tool (-t shellcheck)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -t shellcheck
+✅ Test #9: Run Specific Tool (-t shellcheck) PASSED
+-- finishing Test #9: Run Specific Tool (-t shellcheck)
+<Results of Running Individual Test #9>
+==========================================
+-- Starting Test #10: Combination: Verbose + Security (-v -s)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -v -s
+✅ Test #10: Combination: Verbose + Security (-v -s) PASSED
+--   [INFO] 2025-03-02 01:16:05 -> Checking security level compliance...
+--   [INFO] 2025-03-02 01:16:05 -> RETURN_CODE 0
+--   [INFO] 2025-03-02 01:16:05 -> VALID_STATE 0
+--   [INFO] 2025-03-02 01:16:05 -> Completed Pre-Commit Hook Processing
+-- finishing Test #10: Combination: Verbose + Security (-v -s)
+<Results of Running Individual Test #10>
+==========================================
+-- Starting Test #11: Combination: All Validations + Verbose (-a -v)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -a -v
+✅ Test #11: Combination: All Validations + Verbose (-a -v) PASSED
+--+++ [WARN] 2025-03-02 01:16:05 -> Commit message format does not match the expected pattern!
+--+++ [WARN] 2025-03-02 01:16:05 -> Expected format: feat(auth): Add JWT authentication support
+--+++ [WARN] 2025-03-02 01:16:05 -> Commit message does not contain a reserved keyword! Consider using one: feat,feature,fix,bugfix,docs,documentation,style,refactor,perf,performance,test,testing,chore,build
+--+++ [WARN] 2025-03-02 01:16:06 -> SpellCheck found 1 misspelled words:
+--+++ [WARN] 2025-03-02 01:16:06 ->   - pre
+--   [INFO] 2025-03-02 01:16:06 -> RETURN_CODE 0
+--   [INFO] 2025-03-02 01:16:06 -> VALID_STATE 0
+--   [INFO] 2025-03-02 01:16:06 -> Completed Pre-Commit Hook Processing
+-- finishing Test #11: Combination: All Validations + Verbose (-a -v)
+<Results of Running Individual Test #11>
+==========================================
+-- Starting Test #12: Invalid Option (--invalid)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" --invalid
+✅ Test #12: Invalid Option (--invalid) PASSED
+--+++ [WARN] 2025-03-02 01:16:06 -> Unknown option --invalid
+Usage: pre-commit.sh [options]
+Options:
+  -a, --all             Run all validation checks
+  -c, --commit-msg      Validate commit message (optional: specify file)
+  -d, --display-config  Show current pre-commit configuration
+  -h, --help            Show this help message
+  -m, --meta            Validate metadata in committed files
+  -p, --path <dir>      Specify directory for scan
+  -s, --security        Perform security level checks
+  -t, --tool <name>     Run a specific automated tool (or all if omitted)
+  -v, --verbose         Enable verbose logging
+-- finishing Test #12: Invalid Option (--invalid)
+<Results of Running Individual Test #12>
+==========================================
+-- Starting Test #13: Run All Validations (-a)
+   Running: bash "/Users/robertstavros/Documents/TemplateFoundry/TemplateProcessorTest/TemplateDL/pre-commit.sh" -a
+✅ Test #13: Run All Validations (-a) PASSED
+--+++ [WARN] 2025-03-02 01:16:06 -> Commit message format does not match the expected pattern!
+--+++ [WARN] 2025-03-02 01:16:06 -> Expected format: feat(auth): Add JWT authentication support
+--+++ [WARN] 2025-03-02 01:16:06 -> Commit message does not contain a reserved keyword! Consider using one: feat,feature,fix,bugfix,docs,documentation,style,refactor,perf,performance,test,testing,chore,build
+--+++ [WARN] 2025-03-02 01:16:06 -> SpellCheck found 1 misspelled words:
+--+++ [WARN] 2025-03-02 01:16:06 ->   - pre
+-- finishing Test #13: Run All Validations (-a)
+<Results of Running Individual Test #13>
+
+-- TEST SUMMARY --
+Total Tests Run    : 13
+Successful Tests   : 13
+Failed Tests       : 0
+----------------------------------
+✅ Test #1: Help Message (-h) PASSED
+✅ Test #2: Verbose Mode (-v) PASSED
+✅ Test #3: Verbose Mode (-v) PASSED
+✅ Test #4: Display Config (-d) PASSED
+✅ Test #5: Check Commit Message (-c) PASSED
+✅ Test #6: Validate Metadata (-m) PASSED
+✅ Test #7: Specify Path for Validation (-p) PASSED
+✅ Test #8: Perform Security Checks (-s) PASSED
+✅ Test #9: Run Specific Tool (-t shellcheck) PASSED
+✅ Test #10: Combination: Verbose + Security (-v -s) PASSED
+✅ Test #11: Combination: All Validations + Verbose (-a -v) PASSED
+✅ Test #12: Invalid Option (--invalid) PASSED
+✅ Test #13: Run All Validations (-a) PASSED
+-- END OF TESTS --

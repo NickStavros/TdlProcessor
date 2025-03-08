@@ -1,114 +1,137 @@
 #!/bin/bash
-# set -x  # Enable debug mode
 # ------------------------------------------------------------------------------
-# NON-DESTRUCTIVE TEST SUITE FOR pre-commit.sh
+# PUBLIC
 # ------------------------------------------------------------------------------
-# Ensures that pre-commit.sh runs on an existing repo structure
-# without modifying tracked files or committing changes.
-# ------------------------------------------------------------------------------
+# ==============================================================
+# Script: testPreCommitOptions.sh
+# Description: This script tests pre-commit hooks by running
+#              `pre-commit.sh` with different options and
+#              logging the results.
+# Author: R. W. "Nick" Stavros, Ph.D.
+# ==============================================================
 
-set -e  # Exit on first failure (for debugging, remove if needed)
-
-# Load pre-commit script
-PRE_COMMIT_SCRIPT="../pre-commit.sh"
-CONFIG_FILE=".git/pre_commit_config.json"
-
-# Test Counters
-TOTAL_TESTS=0
-SUCCESS_COUNT=0
-FAIL_COUNT=0
-TEST_RESULTS=()
-
-# ---------- Setup Environment Function ----------
+# ------------------------------------------------------
+# Function: displayResults
+# Description: Displays a summary of all test results.
+# Output: Prints test statistics and results to the log.
+# ------------------------------------------------------
+# ------------------------------------------------------
+# Function: setupEnvironment
+# Description: Ensures the script is running in a Git repository.
+# Output: Logs information about the repository setup.
+# ------------------------------------------------------
 setupEnvironment()
-{
-  # Find the root of the Git repository
-  PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-
-  if [[ -z "$PROJECT_ROOT" ]]; then
-    echo "❌ ERROR: This script must be run inside a Git repository!"
+{ # Initialize and export Counters for test results
+  export TOTAL_TESTS=0
+  export SUCCESS_COUNT=0
+  export FAIL_COUNT=0
+  TEST_RESULTS=()
+  # Define script name and pre-commit script location
+  SCRIPT_NAME=$(basename "$0" .sh)
+  PRE_COMMIT_SCRIPT_NAME="pre-commit.sh"
+  # Ensure we are inside a Git repository before proceeding
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "❌ Not inside a Git repository. Exiting."
     exit 1
   fi
+  # Find pre-commit.sh within the Git repository
+  PRE_COMMIT_SCRIPT="$(find "$(git rev-parse --show-toplevel)" -type f -name "$PRE_COMMIT_SCRIPT_NAME" | head -n 1)"
+  # Define log file and output directory (placing Output one level up from the test script)
+  OUTPUT_DIR="$(dirname "$0")/../Output"
+  mkdir -p "$OUTPUT_DIR"  # Ensure Output directory exists
+  LOG_FILE="$OUTPUT_DIR/$SCRIPT_NAME.log"
 
-  # Locate TemplateDL dynamically
-  DIST_DIR=$(find "$PROJECT_ROOT" -type d -name "TemplateDL" -print -quit)
+  # Reset log file at the beginning of execution
+  echo "-- Running $SCRIPT_NAME on $(date) -- Log File: $LOG_FILE" > "$LOG_FILE"
+  echo "-- LOG_FILE set to: $LOG_FILE" | tee -a "$LOG_FILE"
 
-  if [[ -z "$DIST_DIR" ]]; then
-    echo "❌ ERROR: Could not locate TemplateDL directory inside $PROJECT_ROOT."
-    exit 1
-  fi
+} # End Function setupEnvironment
 
-  # Dynamically find pre-commit.sh inside TemplateDL
-  PRE_COMMIT_SCRIPT=$(find "$DIST_DIR" -type f -name "pre-commit.sh" -print -quit)
-
-  if [[ ! -x "$PRE_COMMIT_SCRIPT" ]]; then
-    echo "❌ ERROR: pre-commit.sh not found or not executable! Path: $PRE_COMMIT_SCRIPT"
-    exit 1
-  fi
-
-  echo "✅ pre-commit.sh found at: $PRE_COMMIT_SCRIPT"
-} # End function setupEnvironment
-
-# ---------- Function: Run Test and Capture Output ----------
+# ------------------------------------------------------
+# Function: runTest
+# Description: Runs a test case against the pre-commit hook.
+# Parameters: 
+#   $1 - Test name
+#   $@ - Arguments passed to `pre-commit.sh`
+# Output: Captures and logs the output, updates result counters.
+# ------------------------------------------------------
 runTest()
-{ local TEST_NAME="$1"
+{ 
+  local TEST_NAME="$1"
   shift
   ((TOTAL_TESTS++))
-  echo "-- Test #$TOTAL_TESTS: $TEST_NAME"
-  echo "   Running: bash \"$PRE_COMMIT_SCRIPT\" $@"
-  if bash "$PRE_COMMIT_SCRIPT" "$@" &> "test_output.log"; then
-    if grep -q "Usage: pre-commit.sh" test_output.log; then
-      TEST_RESULTS+=("✅ Test #$TOTAL_TESTS: $TEST_NAME PASSED")
-      ((SUCCESS_COUNT++))
-    else
-      TEST_RESULTS+=("❌ Test #$TOTAL_TESTS: $TEST_NAME OUTPUT MISMATCH")
-      ((FAIL_COUNT++))
-      cat test_output.log  # Show failure details
-    fi
+
+  # Define test-specific log file
+  local TEST_LOG_FILE="$OUTPUT_DIR/test_${TOTAL_TESTS}_$(echo "$TEST_NAME" | tr ' ' '_').log"
+
+  # Print test start information
+  {
+    echo "=========================================="
+    echo "-- Starting Test #$TOTAL_TESTS: $TEST_NAME"
+    echo "   Running: bash \"$PRE_COMMIT_SCRIPT\" $@"
+  } | tee -a "$LOG_FILE"
+
+  # Run the test and capture output in a temporary log
+  {
+    bash "$PRE_COMMIT_SCRIPT" "$@" 2>&1 
+  } | tee "$TEST_LOG_FILE"
+
+  EXIT_CODE=${PIPESTATUS[0]}  # Capture the actual exit code of pre-commit.sh
+
+  # Evaluate test results and log appropriately
+  if [[ $EXIT_CODE -eq 0 ]]; then
+    TEST_STATUS="✅ Test #$TOTAL_TESTS: $TEST_NAME PASSED"
+    ((SUCCESS_COUNT++))
   else
-    TEST_RESULTS+=("❌ Test #$TOTAL_TESTS: $TEST_NAME FAILED")
+    TEST_STATUS="❌ Test #$TOTAL_TESTS: $TEST_NAME FAILED (EXIT_CODE=$EXIT_CODE)"
     ((FAIL_COUNT++))
-    cat test_output.log  # Show failure details
   fi
-} # End function runTest
+  TEST_RESULTS+=("$TEST_STATUS")
 
-# ---------- Function: Ensure Safe Test Environment ----------
-ensureSafeTesting()
-{ # Find the root of the Git repository
-  PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-  if [[ -z "$PROJECT_ROOT" ]]; then
-    echo "❌ ERROR: This test must be run inside a Git repository!"
-    exit 1
-  fi
-  echo "✅ Git repository detected at: $PROJECT_ROOT"
-} # End function ensureSafeTesting
+  # Merge the test output into the main log
+  {
+    echo "$TEST_STATUS"
+    cat "$TEST_LOG_FILE"
+    echo "-- finishing Test #$TOTAL_TESTS: $TEST_NAME"
+    echo "<Results of Running Individual Test #$TOTAL_TESTS>"
+  } | tee -a "$LOG_FILE"
 
-# ---------- Function: Run All Tests Non-Destructively ----------
-runAllTests()
-{ runTest "Help Message (-h)" -h
-  # runTest "Display Config (-d)" -d
-  # runTest "Validate Commit Message (-c)" -c
-  # runTest "Run Metadata Checks (-m)" -m
-  # runTest "Run Security Checks (-s)" -s
-  # runTest "Run Automated Checks (-t)" -t
-  # runTest "Run All Checks (-a)" -a
-} # End function runAllTests
+  # Clean up the temporary log
+  rm -f "$TEST_LOG_FILE"
 
-# ---------- Function: Display Test Results ----------
+} # End Function runTest
+
+
 displayResults()
-{ echo -e "\n-- TEST SUMMARY --"
-  echo "Total Tests Run    : $TOTAL_TESTS"
-  echo "Successful Tests   : $SUCCESS_COUNT"
-  echo "Failed Tests       : $FAIL_COUNT"
-  echo "----------------------------------"
+{ echo -e "\n-- TEST SUMMARY --"             | tee -a "$LOG_FILE"
+  echo "Total Tests Run    : $TOTAL_TESTS"   | tee -a "$LOG_FILE"
+  echo "Successful Tests   : $SUCCESS_COUNT" | tee -a "$LOG_FILE"
+  echo "Failed Tests       : $FAIL_COUNT"    | tee -a "$LOG_FILE"
+  echo "----------------------------------"  | tee -a "$LOG_FILE"
   for result in "${TEST_RESULTS[@]}"; do
-    echo "$result"
+    echo "$result" | tee -a "$LOG_FILE"
   done
-  echo "-- END OF TESTS --"
-} # End function displayResults
+  echo "-- END OF TESTS --" | tee -a "$LOG_FILE"
+} # End Function displayResults
 
+runTests()
+{ runTest "Help Message (-h)"                   -h
+  runTest "Verbose Mode (-v)"                   -v
+  runTest "Verbose Mode (-v)"                   -v false
+  runTest "Display Config (-d)"                 -d
+  runTest "Check Commit Message (-c)"           -c "commit-message.txt"
+  runTest "Validate Metadata (-m)"              -m
+  runTest "Specify Path for Validation (-p)"    -p "./"
+  runTest "Perform Security Checks (-s)"        -s
+  runTest "Run Specific Tool (-t shellcheck)"   -t "shellcheck"
+  runTest "Combination: Verbose + Security (-v -s)" -v -s
+  runTest "Combination: All Validations + Verbose (-a -v)" -a -v
+  runTest "Invalid Option (--invalid)"         --invalid
+  runTest "Run All Validations (-a)"           -a
+} # End Function runTests
+
+# =================================================================
 # ---------- MAIN: Run Tests in a Non-Destructive Manner ----------
 setupEnvironment
-ensureSafeTesting
-runAllTests
+runTests
 displayResults

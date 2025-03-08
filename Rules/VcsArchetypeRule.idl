@@ -1,0 +1,54 @@
+interface VcsRule
+{
+  // Returns the full name of the rule
+  string getRuleName();
+
+  // Returns the title of the rule
+  string getRuleTitle();
+
+  // Sets up the environment, loading necessary configurations
+  int setupEnvironment();
+
+  // Displays usage information for this rule
+  int showHelp();
+
+  // Loads verbosity settings from configuration
+  void loadVerbositySettings();
+
+  // Loads JSON configuration values
+  void loadJsonConfigValues();
+
+  // Retrieves a JSON value or returns a default if not found
+  string getJsonValueOrDefault(string key, string defaultValue, string description);
+
+  // Checks if required dependencies are installed
+  int toolVerification();
+
+  // Executes the rule on staged files
+  int processStagedFiles();
+
+  // Executes the rule on a single file
+  int processFile(string fileName);
+
+  // Processes buffer input, if supported
+  int processBuffer(string bufferText);
+
+  // Processes command-line options and routes execution accordingly
+  int processOptions(string[] args);
+    
+  // Prints an informational message
+  void PostInfo(string message);
+
+  // Prints a warning message
+  void PostWarn(string message);
+
+  // Prints an error message
+  void PostErr(string message);
+
+  // Prints a debug message
+  void PostDebug(string message);
+    
+  // Main execution function
+  int main(string[] args);
+
+}; // End Interface VcsRule

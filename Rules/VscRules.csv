@@ -1,0 +1,2 @@
+"ruleName","ruleTitle","ruleDescription","listOfExtensions","companyName","authors","license","nameOfProduct","productURI"
+"VcsShellCheckRule","Shell Script Linter for Pre-Commit Hooks",".sh,.bash,.ksh","Dido Solutions Inc.",'R. W. "Nick" Stavros, Ph.D.; Hamish I. MacCloud, AIA',"MIT","ShellCheck","https://www.shellcheck.net/"

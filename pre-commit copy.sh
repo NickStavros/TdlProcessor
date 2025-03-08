@@ -99,8 +99,8 @@ showHelp()
   echo "  -h, --help            Show this help message"
   echo "  -m, --meta            Validate metadata in committed files"
   echo "  -p, --path <dir>      Specify directory for scan"
-  echo "  -r, --rule <name>     Run a specific automated tool (or all if omitted)"
   echo "  -s, --security        Perform security level checks"
+  echo "  -t, --tool <name>     Run a specific automated tool (or all if omitted)"
   echo "  -v, --verbose         Enable verbose logging"
   return 0
 } # End function showHelp
@@ -342,7 +342,7 @@ validateCommitMessage()
 
 # ---------- Function: Run Automated Linting & Security Checks ----------
 runAutomatedChecksAction()
-{ local RULE_TO_RUN="$1"
+{ local TOOL_TO_RUN="$1"
   local SCAN_SCOPE
   SCAN_SCOPE=$(getJsonValue '.scan_scope.default_path')
 
@@ -354,8 +354,8 @@ runAutomatedChecksAction()
   local ALLOW_OVERRIDES
   ALLOW_OVERRIDES=$(getJsonValue '.scan_scope.allow_overrides')
 
-  if [[ "$ALLOW_OVERRIDES" == "true" && -n "$RULE_TO_RUN" ]]; then
-    SCAN_SCOPE="$RULE_TO_RUN"  # Override default scan path if provided
+  if [[ "$ALLOW_OVERRIDES" == "true" && -n "$TOOL_TO_RUN" ]]; then
+    SCAN_SCOPE="$TOOL_TO_RUN"  # Override default scan path if provided
   fi
 
   PostInfo "Running automated checks on '${SCAN_SCOPE:-entire repository}'..."
@@ -374,7 +374,7 @@ runAutomatedChecksAction()
   fi
 
   # Run ShellCheck if requested or no specific tool was provided
-  if [[ -z "$RULE_TO_RUN" || "$RULE_TO_RUN" == "shellcheck" ]]; then
+  if [[ -z "$TOOL_TO_RUN" || "$TOOL_TO_RUN" == "shellcheck" ]]; then
     if [ "$(getJsonValue '.pre_commit.tools.shellcheck.enabled')" = "true" ]; then
       if command -v shellcheck &> /dev/null; then
         PostInfo "Running ShellCheck on shell scripts in ${SCAN_SCOPE}..."
@@ -403,7 +403,7 @@ runAutomatedChecksAction()
   fi
 
   # Run JSONLint if requested or no specific tool was provided
-  if [[ -z "$RULE_TO_RUN" || "$RULE_TO_RUN" == "jsonlint" ]]; then
+  if [[ -z "$TOOL_TO_RUN" || "$TOOL_TO_RUN" == "jsonlint" ]]; then
     if [ "$(getJsonValue '.pre_commit.tools.jsonlint.enabled')" = "true" ]; then
       if command -v jsonlint &> /dev/null; then
         PostInfo "Running JSONLint on JSON files in ${SCAN_SCOPE}..."
@@ -428,7 +428,7 @@ runAutomatedChecksAction()
     fi
   fi
   # Run YAML Lint if requested or no specific tool was provided
-  if [[ -z "$RULE_TO_RUN" || "$RULE_TO_RUN" == "yamllint" ]]; then
+  if [[ -z "$TOOL_TO_RUN" || "$TOOL_TO_RUN" == "yamllint" ]]; then
     if [ "$(getJsonValue '.pre_commit.tools.yamllint.enabled')" = "true" ]; then
       if command -v yamllint &> /dev/null; then
         PostInfo "Running YAML Lint (yamllint) on YAML files in ${SCAN_SCOPE}..."
@@ -458,7 +458,7 @@ runAutomatedChecksAction()
   fi
 
   # Run SpellCheck if requested or if no specific tool was provided
-  if [[ -z "$RULE_TO_RUN" || "$RULE_TO_RUN" == "spell" ]]; then
+  if [[ -z "$TOOL_TO_RUN" || "$TOOL_TO_RUN" == "spell" ]]; then
     if [ "$(getJsonValue '.pre_commit.tools.spell.enabled')" = "true" ]; then
       PostInfo "Running SpellCheck on text files in ${SCAN_SCOPE}..."
       local SPELLCHECK_FILES_CHECKED=0
@@ -486,7 +486,7 @@ runAutomatedChecksAction()
       PostInfo "SpellCheck Summary: $SPELLCHECK_FILES_CHECKED files checked, $SPELLCHECK_ERRORS_FOUND misspelled words found."
     fi
   fi
-  PostInfo "Completed automated checks.${RULE_TO_RUN:+ (Only: $RULE_TO_RUN)} in ${SCAN_SCOPE}"
+  PostInfo "Completed automated checks.${TOOL_TO_RUN:+ (Only: $TOOL_TO_RUN)} in ${SCAN_SCOPE}"
   
 } # End function runAutomatedChecksAction
 
@@ -723,28 +723,29 @@ processArguments()
           SCAN_PATH="$1"
         fi
         ;;
-      # Run all rules or a specific rule
-      -r|--rule)  
-        shift
-        if [[ -z "$1" || "$1" =~ ^- ]]; then
-          RULE_NAME=""
-          set -- "$@"  # Reset arguments to prevent shift issues
-        else
-          RULE_NAME="$1"
-          shift
-        fi
-        AVAILABLE_RULES=$(getJsonValue ".pre_commit.tools | keys | join(\" \")")
-        if [[ -n "$RULE_NAME" && ! " $AVAILABLE_RULES " =~ " $RULE_NAME " ]]; then
-          PostErr "Invalid tool: '$RULE_NAME'. Available tools: $AVAILABLE_RULES"
-          ((VALID_STATE++))
-          return
-        fi
-        runAutomatedChecksAction "$RULE_NAME"
-        ;;
 
       # Perform security level checks
       -s|--security)  
         checkSecurityLevelAction
+        ;;
+
+      # Run all tools or a specific tool
+      -t|--tool)  
+        shift
+        if [[ -z "$1" || "$1" =~ ^- ]]; then
+          TOOL_NAME=""
+          set -- "$@"  # Reset arguments to prevent shift issues
+        else
+          TOOL_NAME="$1"
+          shift
+        fi
+        AVAILABLE_TOOLS=$(getJsonValue ".pre_commit.tools | keys | join(\" \")")
+        if [[ -n "$TOOL_NAME" && ! " $AVAILABLE_TOOLS " =~ " $TOOL_NAME " ]]; then
+          PostErr "Invalid tool: '$TOOL_NAME'. Available tools: $AVAILABLE_TOOLS"
+          ((VALID_STATE++))
+          return
+        fi
+        runAutomatedChecksAction "$TOOL_NAME"
         ;;
 
       # Enable verbose logging

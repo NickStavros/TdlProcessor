@@ -15,7 +15,7 @@
     ],
     "automatedReviews": 
     [ { "tool": "Hamish I. MacCloud, AIA", "purpose": "AI Code Review" },
-      { "tool": "JSONLint", "purpose": "Schema Validation", "lastRun": "2025-02-24" }
+      { "rule": "JSONLint", "purpose": "Schema Validation", "lastRun": "2025-02-24" }
     ]
   },
 
@@ -60,27 +60,42 @@
       ],
     "metadata_checks_enabled": true,
     "security_checks_enabled": true,
-    "automated_tools_enabled": true,
+    "automated_rules_enabled": true,
 
     "scan_scope":
     { "default_path": "",
       "allow_overrides": true
     },
-
-    "tools":
-    { "shellcheck": 
+    "verbose" :
+      { "debug"  :  { "enabled" : "true" },
+        "info"   :  { "enabled" : "true" },
+        "warn"   :  { "enabled" : "true" },
+        "error"  :  { "enabled" : "true" }
+     },
+    "rules":
+    { "<ruleName>":
+      { "<ruleName>.enabled" : false,
+        "exclude": "$.pre_commit.file_exclusions",
+        "extensions": [".<fileExtension_1>", ".<fileExtension_2>"],
+        "supportsBuffer": false
+      },
+      "shellcheck": 
       { "enabled": true,
-        "exclude": ["tests/", "scripts/legacy/"]
+        "exclude": "$.pre_commit.file_exclusions",
+        "extensions": [".sh", ".bash", ".ksh"],
+        "supportsBuffer": false
       },
       "jsonlint": 
       { "enabled": true,
-        "exclude": ["data/old_json/"]
+        "exclude": ["data/old_json/"],
+        "supportsBuffer": false
       }
     },
     "spell": 
     { "enabled": true,
       "exclude": ["docs/technical/", "CHANGELOG.md"],
-      "file_types": ["txt", "md"]
+      "file_types": ["txt", "md"],
+      "supportsBuffer": true
     }
   }
 }
