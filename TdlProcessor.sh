@@ -1,4 +1,7 @@
 #!/bin/bash
+# ----------------------------------------------------------------------------
+# PUBLIC
+# ----------------------------------------------------------------------------
 # ==============================================================================
 # File: TdlProcessor.sh
 # Copyright (c) 2023 to present by Dido Solutions. All rights reserved.
@@ -71,7 +74,7 @@ setupEnvironment()
     PostInfo "Not in TemplateDL directory. Will create and use $TDL_ROOT as TDL_ROOT."
   fi
   NODE_CMD="node"
-  GITHUB_REPO="https://github.com/DidoSolutions/TemplateDL.git"
+  GITHUB_REPO="https://github.com/NickStavros/TdlProcessor.git"
   GITHUB_DIR="$TDL_ROOT"
 
   DEFAULT_EXECUTABLE="$TDL_ROOT/Code/TdlProcessor.js"
@@ -92,13 +95,12 @@ setupEnvironment()
 # ---------- Logging
 timestamp() { echo "$(date '+%Y-%m-%d %H:%M:%S')"; }
 PostInfo()  { if [ "$LOCAL_VERBOSE" = true ]; then echo "--   $(timestamp) ->$1"; fi; }
-PostWarn()  { echo "--+++ $(timestamp) ->$1"; }
-PostErr()   { echo "--*** $(timestamp) ->$1" >&2; }
+PostWarn()  { echo "--+++ WARNING: $(timestamp) ->$1"; }
+PostErr()   { echo "--*** ERROR: $(timestamp) ->$1" >&2; }
+
 # ---------- Function to show the settings file
 showConfigAction()
-{ 
-  PostInfo "DEBUG: Looking for settings file at: $SETTING_FILESPEC"
-
+{ PostInfo "DEBUG: Looking for settings file at: $SETTING_FILESPEC"
   if [ -f "$SETTING_FILESPEC" ]; then
     PostInfo "Settings file found at: $SETTING_FILESPEC"
     cat "$SETTING_FILESPEC"
@@ -145,18 +147,18 @@ updateConfigAction()
 
 # ---------- Help Function
 displayHelpAction()
-{ PostInfo "Usage: TdlProcessor.sh [options]"
-  PostInfo "Options:"
-  PostInfo "  -i, --input <inputFileSpec>       Specify input TDL file (default: input.tdl)"
-  PostInfo "  -o, --output <outputFileSpec>     Specify output file (default: output.json)"
-  PostInfo "  -s, --settings <settingFileSpec>  Specify settings file (default: tdlSettings.json)"
-  PostInfo "  -v, --verbose                     Enable verbose mode"
-  PostInfo "  -b, --build <home_directory>      Set up the TDL environment in the specified home directory"
-  PostInfo "  -c, --config <key> <value>        Modify a setting in the settings file"
-  PostInfo "  -d, --display-config              Show the current settings file"
-  PostInfo "  -m, --make-config <directory>     Create a settings file in the specified directory (default: Data)"
-  PostInfo "  -g, --github [clone|pull|help]    Clone or update the TemplateDL GitHub repository"
-  PostInfo "  -h, --help                        Display this help message"
+{ echo "Usage: TdlProcessor.sh [options]"
+  echo "Options:"
+  echo "  -i, --input <inputFileSpec>       Specify input TDL file (default: input.tdl)"
+  echo "  -o, --output <outputFileSpec>     Specify output file (default: output.json)"
+  echo "  -s, --settings <settingFileSpec>  Specify settings file (default: tdlSettings.json)"
+  echo "  -v, --verbose                     Enable verbose mode"
+  echo "  -b, --build <home_directory>      Set up the TDL environment in the specified home directory"
+  echo "  -c, --config <key> <value>        Modify a setting in the settings file"
+  echo "  -d, --display-config              Show the current settings file"
+  echo "  -m, --make-config <directory>     Create a settings file in the specified directory (default: Data)"
+  echo "  -g, --github [clone|pull|help]    Clone or update the TemplateDL GitHub repository"
+  echo "  -h, --help                        Display this help message"
 } # End displayHelpAction
 
 # ---------- Function to check if Node.js is installed
@@ -238,8 +240,12 @@ buildDirectoryAction()
   local required_dirs=("Code" "Data" "Documents" "Output" "Results" "Templates")
   for dir in "${required_dirs[@]}"; do
     local full_path="$TDL_ROOT/$dir"
-    mkdir -p "$full_path"
-    PostInfo "Created: $full_path"
+    if [ -d "$full_path" ]; then
+      PostInfo "Directory already exists: $full_path"
+    else
+      mkdir -p "$full_path"
+      PostInfo "Created: $full_path"
+    fi
   done
   # Ensure `TdlProcessor.sh` exists in the root directory
   local script_path="$(pwd)/TdlProcessor.sh"
@@ -254,18 +260,14 @@ buildDirectoryAction()
 } # End buildDirectoryAction
 
 # ---------- Function to create default settings file
-# ---------- Function to create default settings file
 initConfigAction()
 { local config_dir="${1:-$(dirname "$SETTING_FILESPEC")}"
   local config_file="$config_dir/tdlSettings.json"
   PostInfo "Initializing the ${config_file}"
-
   if [ -z "$1" ]; then
     PostWarn "No directory specified for config. Using default: $config_dir"
   fi
-
   mkdir -p "$config_dir"
-
   cat <<EOF > "$config_file"
 {
   "_meta": {
@@ -309,8 +311,7 @@ initConfigAction()
   "systemModelVersion": "0.0.1a"
 }
 EOF
-
-  validateSettingsFile "$config_file" 
+  # validateSettingsFile "$config_file" 
   PostInfo "Created default configuration file: $config_file"
 } # End initConfigAction
 
@@ -320,29 +321,76 @@ EOF
 validateSettingsFile() 
 { 
   if [ ! -f "$SETTING_FILESPEC" ]; then
-    PostErr "ERROR: TdlSettings.json not found! Creating a default settings file..."
+    PostErr "TdlSettings.json not found! Creating a default settings file..."
     initConfigAction "$(dirname "$SETTING_FILESPEC")"
   fi
 
-  if [ ! -f "$TDL_VALIDATOR_SCRIPT" ]; then
-    PostWarn "WARNING: Validation script $TDL_VALIDATOR_SCRIPT not found! Reverting to default settings."
+  # Only initialize settings if the file does NOT already exist
+  if [ ! -f "$SETTING_FILESPEC" ]; then
     initConfigAction "$(dirname "$SETTING_FILESPEC")"
-    return 0  # Continue execution with defaults.
-  fi
-
-  if node "$TDL_VALIDATOR_SCRIPT" "$SETTING_FILESPEC"; then
-    PostInfo "TdlSettings.json validation successful."
   else
-    PostErr "ERROR: TdlSettings.json validation failed! Reverting to default settings..."
-    initConfigAction "$(dirname "$SETTING_FILESPEC")"
+    PostInfo "Existing settings file found. Skipping re-initialization."
+  fi
+
+  if [ -f "$TDL_VALIDATOR_SCRIPT" ]; then
+    if node "$TDL_VALIDATOR_SCRIPT" "$SETTING_FILESPEC"; then
+      PostInfo "TdlSettings.json validation successful."
+    else
+      PostErr "TdlSettings.json validation failed! Reverting to default settings..."
+      initConfigAction "$(dirname "$SETTING_FILESPEC")"
+    fi
+  else
+    PostWarn "Validation script $TDL_VALIDATOR_SCRIPT not found! Skipping validation."
   fi
 } # End validateSettingsFile
 
+# ---------- Function: githubAction
+githubAction()
+{ PostInfo "Starting githubAction"
+  local action="${1:-clone}"  # Default to "clone" if no argument is given
+  local repo_url="https://github.com/NickStavros/TdlProcessor.git"
+  local repo_dir="TemplateDL"
+  case "$action" in
+    clone)
+      if [ -d "$repo_dir/.git" ]; then
+        PostWarn "Repository already exists in $repo_dir. Use 'pull' to update."
+      else
+        PostInfo "Cloning TemplateDL repository..."
+        git clone "$repo_url" "$repo_dir" || { PostErr "Git clone failed!"; exit 1; }
+        PostInfo "Clone successful. Repository is in $repo_dir."
+      fi
+      ;;
+    pull)
+      if [ -d "$repo_dir/.git" ]; then
+        PostInfo "Updating TemplateDL repository..."
+        cd "$repo_dir" || { PostErr "Failed to navigate to $repo_dir"; exit 1; }
+        git pull origin main || { PostErr "Git pull failed!"; exit 1; }
+        PostInfo "Repository updated successfully."
+      else
+        PostErr "Repository not found in $repo_dir. Run 'githubAction clone' first."
+        exit 1
+      fi
+      ;;
+    help)
+      echo "Usage: TdlProcessor.sh --github [clone|pull|help]"
+      echo "  clone - Clones the TemplateDL repository (default action)"
+      echo "  pull  - Updates the existing TemplateDL repository"
+      echo "  help  - Displays this help message"
+      ;;
+    *)
+      PostErr "Invalid option: $action. Use 'clone', 'pull', or 'help'."
+      exit 1
+      ;;
+  esac
+  PostInfo "Starting githubAction"
+} # End function githubAction
+
+
 # ========== MAIN ==========
 PostInfo "Starting TdlProcessor"
-setupEnvironment  # Ensures all environment variables are initialized
-validateSettingsFile  # Validate settings after setup
-checkNodeJsInstalled
+setupEnvironment       || { PostErr "setupEnvironment failed! Exiting."; exit 1; }
+validateSettingsFile   || { PostErr "validateSettingsFile failed! Exiting."; exit 1; }
+checkNodeJsInstalled   || { PostErr "checkNodeJsInstalled failed! Exiting."; exit 1; }
 processArguments "$@"
 EXIT_CODE=$?
 PostInfo "Finishing TdlProcessor : $EXIT_CODE"

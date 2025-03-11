@@ -17,9 +17,9 @@
  * - ESLint - Code Linting (Last run: 22 February 2025)
  */
 
-import fs from 'fs';
-import path from 'path';
-import Ajv from 'ajv';
+import fs     from 'fs';
+import path   from 'path';
+import Ajv    from 'ajv';
 
 /**
  * @file ValidateSettings.js
